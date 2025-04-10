@@ -95,25 +95,47 @@ double? calculateInterest(
 }
 
 String formatReal(String? value) {
+  // String cleanValue = value?.replaceAll(RegExp('[^0-9]'), '') ?? '';
+
+  // // Checa se a entrada limpa está vazia
+  // if (cleanValue.isEmpty) {
+  //   return '';
+  // }
+
+  // // Cria o formatador de número para o formato de moeda brasileiro sem símbolo
+  // final numberFormat = NumberFormat.currency(locale: 'pt_BR', symbol: '');
+
+  // // Tenta converter o valor limpo para double
+  // double? doubleValue = double.tryParse(cleanValue);
+
+  // // Verifica se doubleValue é nulo ou zero, retorna string vazia se verdadeiro
+  // if (doubleValue == null || doubleValue == 0) {
+  //   return '';
+  // }
+
+  // // Formata o valor para moeda, dividindo por 100 para converter centavos em reais
+  // return numberFormat.format(doubleValue / 100);
+
   String cleanValue = value?.replaceAll(RegExp('[^0-9]'), '') ?? '';
 
-  // Checa se a entrada limpa está vazia
   if (cleanValue.isEmpty) {
     return '';
   }
 
-  // Cria o formatador de número para o formato de moeda brasileiro sem símbolo
-  final numberFormat = NumberFormat.currency(locale: 'pt_BR', symbol: '');
+  // Convert clean value to a double and divide by 100 for cents
+  double doubleValue = double.tryParse(cleanValue) ?? 0;
 
-  // Tenta converter o valor limpo para double
-  double? doubleValue = double.tryParse(cleanValue);
-
-  // Verifica se doubleValue é nulo ou zero, retorna string vazia se verdadeiro
-  if (doubleValue == null || doubleValue == 0) {
+  if (doubleValue == 0) {
     return '';
   }
 
-  // Formata o valor para moeda, dividindo por 100 para converter centavos em reais
+  // Format as currency
+  final numberFormat = NumberFormat.currency(
+    locale: 'pt_BR',
+    symbol: '',
+    decimalDigits: 2,
+  );
+
   return numberFormat.format(doubleValue / 100);
 }
 
@@ -308,4 +330,8 @@ String getDateFormated(String? date) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
   return 'null';
+}
+
+bool checkApiSuccess(dynamic response) {
+  return response['success'];
 }

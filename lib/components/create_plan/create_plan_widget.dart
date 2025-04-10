@@ -1486,6 +1486,7 @@ class _CreatePlanWidgetState extends State<CreatePlanWidget> {
                                   100.0, 40.0, 0.0, 0.0),
                               child: FFButtonWidget(
                                 onPressed: () async {
+                                  var _shouldSetState = false;
                                   if (functions.calculateInterest(
                                           functions.convertToDouble(
                                               _model.jurosTextController.text),
@@ -1550,47 +1551,81 @@ class _CreatePlanWidgetState extends State<CreatePlanWidget> {
                                             .languageCode,
                                       ),
                                       (String var1) {
-                                        return double.parse(
-                                            var1.replaceAll(',', '.'));
+                                        return double.parse(var1
+                                            .replaceAll('.', '')
+                                            .replaceAll(',', '.'));
                                       }(_model.pixTextController.text),
                                       int.parse(
                                           _model.parcelasTextController.text),
                                       1,
                                     );
-                                    await showDialog(
-                                      context: context,
-                                      builder: (dialogContext) {
-                                        return Dialog(
-                                          elevation: 0,
-                                          insetPadding: EdgeInsets.zero,
-                                          backgroundColor: Colors.transparent,
-                                          alignment: AlignmentDirectional(
-                                                  0.0, 0.0)
-                                              .resolve(
-                                                  Directionality.of(context)),
-                                          child: WebViewAware(
-                                            child: Container(
-                                              height: 270.0,
-                                              width: 360.0,
-                                              child: SimuWidget(
-                                                data: _model.customApiResponse!,
-                                                onselectvaluereativar:
-                                                    (valuereativar) async {
-                                                  safeSetState(() {});
-                                                },
-                                                onselectedvalue3:
-                                                    (value3) async {
-                                                  safeSetState(() {});
-                                                },
+                                    _shouldSetState = true;
+                                    if (functions.checkApiSuccess(
+                                        _model.customApiResponse!)) {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (dialogContext) {
+                                          return Dialog(
+                                            elevation: 0,
+                                            insetPadding: EdgeInsets.zero,
+                                            backgroundColor: Colors.transparent,
+                                            alignment: AlignmentDirectional(
+                                                    0.0, 0.0)
+                                                .resolve(
+                                                    Directionality.of(context)),
+                                            child: WebViewAware(
+                                              child: Container(
+                                                height: 270.0,
+                                                width: 360.0,
+                                                child: SimuWidget(
+                                                  data: getJsonField(
+                                                    _model.customApiResponse,
+                                                    r'''$.data''',
+                                                  ),
+                                                  onselectvaluereativar:
+                                                      (valuereativar) async {
+                                                    safeSetState(() {});
+                                                  },
+                                                  onselectedvalue3:
+                                                      (value3) async {
+                                                    safeSetState(() {});
+                                                  },
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                    );
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (dialogContext) {
+                                          return Dialog(
+                                            elevation: 0,
+                                            insetPadding: EdgeInsets.zero,
+                                            backgroundColor: Colors.transparent,
+                                            alignment: AlignmentDirectional(
+                                                    0.0, 0.0)
+                                                .resolve(
+                                                    Directionality.of(context)),
+                                            child: WebViewAware(
+                                              child: DialogFailedWidget(
+                                                mensagem: getJsonField(
+                                                  _model.customApiResponse,
+                                                  r'''$.message''',
+                                                ).toString(),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
+
+                                    if (_shouldSetState) safeSetState(() {});
+                                    return;
                                   }
 
-                                  safeSetState(() {});
+                                  if (_shouldSetState) safeSetState(() {});
                                 },
                                 text: 'Simular Parcela',
                                 options: FFButtonOptions(

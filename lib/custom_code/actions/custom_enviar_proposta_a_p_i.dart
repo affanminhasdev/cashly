@@ -33,7 +33,7 @@ Future<dynamic> customEnviarPropostaAPI(
     'product_id': productId
   };
 
-  // print('Payload: $payload');
+  print('Payload: $payload');
 
   try {
     // Realizando a chamada à API
@@ -45,15 +45,15 @@ Future<dynamic> customEnviarPropostaAPI(
       },
       body: jsonEncode(payload),
     );
-    //print('Postman: ${response.body}');
+    print('Postman: ${response.body}');
+
+    Map<String, dynamic> decodedResponse = jsonDecode(response.body);
 
     // Verificando a resposta
     if (response.statusCode >= 200 && response.statusCode < 300) {
       // Retorna o resultado como um objeto dinâmico
 
-      Map<String, dynamic> decodedResponse = jsonDecode(response.body);
-
-      return decodedResponse['data'];
+      return decodedResponse;
     } else {
       // Trata erro da API
       print('Status Code: ${response.statusCode}');
@@ -61,7 +61,7 @@ Future<dynamic> customEnviarPropostaAPI(
       return {
         'success': false,
         'error': 'Erro na API: ${response.statusCode}',
-        'message': response.body
+        'message': decodedResponse['message'],
       };
     }
   } catch (e) {
